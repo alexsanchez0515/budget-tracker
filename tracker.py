@@ -27,12 +27,17 @@ class BudgetTracker:
             print(
                 f"{t['type'].title()}: {t['description']} - ${t['amount']:.2f} on {t['date']}")
 
-    def add_transaction(self, t_type: str, desc: str, category: str, amount: float, date: str):
+    def add_transaction(self, t_type: str, desc: str, category: str, amount: float, date: str = None):
         t_type = t_type.lower()
 
         if t_type not in ("expense", "income"):
             raise ValueError(
                 "Invalid type. Please use 'income' or 'expense' for transaction type.")
+
+        if date is None:
+            date = utils.format_date(utils.get_date())
+        else:
+            pass
 
         transaction = {
             "type": t_type,
