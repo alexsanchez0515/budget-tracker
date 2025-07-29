@@ -2,6 +2,9 @@ from util import Utilities
 
 utils = Utilities()
 
+MIN = 1000
+MAX = 9999
+
 
 class BudgetTracker:
 
@@ -9,7 +12,7 @@ class BudgetTracker:
         self.transactions = []
         self.balance = 0.0
         self.name = name
-        self.next_id = 1001
+        self.next_id = MIN + 1
 
     def get_balance(self):
         return self.balance
@@ -58,4 +61,19 @@ class BudgetTracker:
         return
 
     def delete_transaction(self):
-        return
+        user_input = input(
+            "Enter the transaction ID you would like to delete: ")
+
+        try:
+            search_key = int(user_input)
+
+            if search_key < MIN or search_key > MAX:
+                raise ValueError(f"ID must be in range of {MIN} - {MAX}")
+
+            self.transactions = list(
+                filter(lambda d: d.get('id') != search_key, self.transactions))
+
+            print(f"Transaction ID #{search_key} has been deleted.")
+
+        except ValueError as e:
+            print(f"Error: {e}")
