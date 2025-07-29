@@ -1,0 +1,34 @@
+v1 functionalities: 
+
+1. Add Income and Expenses
+
+Users can input:
+Description (e.g. “Paycheck” or “Groceries”)
+Amount
+Category (e.g. Food, Rent, Entertainment)
+Date
+
+2. View Balance Summary
+
+Automatically calculate and display:
+Total income
+Total expenses
+Remaining balance (income - expenses)
+
+3. Transaction History
+
+List of all added income/expenses
+Sorted by date (most recent first)
+Option to delete or edit entries
+
+4. Filter by Category or Date
+
+Ability to view how much was spent:
+In a specific category (e.g. “Food”)
+In a specific time range (e.g. this week/month)
+
+5. Data Persistence
+
+Store user data so it’s not lost when they close the app
+Local storage (for basic version)
+Database (like SQLite or Firebase, for advanced version)
