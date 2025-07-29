@@ -9,6 +9,7 @@ class BudgetTracker:
         self.transactions = []
         self.balance = 0.0
         self.name = name
+        self.next_id = 1001
 
     def get_balance(self):
         return self.balance
@@ -25,7 +26,7 @@ class BudgetTracker:
     def view_transactions(self):
         for t in self.transactions:
             print(
-                f"{t['type'].title()}: {t['description']} - ${t['amount']:.2f} on {t['date']}")
+                f"{t['type'].title()}: {t['description']} - ${t['amount']:.2f} on {t['date']} - ID: {t['id']}")
 
     def add_transaction(self, t_type: str, desc: str, category: str, amount: float, date: str = None):
         t_type = t_type.lower()
@@ -44,9 +45,17 @@ class BudgetTracker:
             "description": desc,
             "category": category,
             "amount": amount,
-            "date": date
+            "date": date,
+            "id": self.next_id
         }
 
         self.transactions.append(transaction)
         self.update_balance(t_type, amount)
+        self.next_id += 1
         print(f"{t_type.title()} was added: {desc} - ${amount:.2f}")
+
+    def edit_transaction(self):
+        return
+
+    def delete_transaction(self):
+        return

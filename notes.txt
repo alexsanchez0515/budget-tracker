@@ -32,3 +32,15 @@ In a specific time range (e.g. this week/month)
 Store user data so it’s not lost when they close the app
 Local storage (for basic version)
 Database (like SQLite or Firebase, for advanced version)
+
+Updates coming: 
+
+Edit/Delete Transactions
+Categorize/Set budget limits
+Reports - Income vs. Expenses
+Set recurring payments
+User authentication
+Exporting data
+Saving/loading data
+Handling currencies
+Setting goals
