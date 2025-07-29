@@ -2,17 +2,17 @@ from util import Utilities
 
 utils = Utilities()
 
-MIN = 1000
-MAX = 9999
-
 
 class BudgetTracker:
 
     def __init__(self, name: str):
         self.transactions = []
+        self.options = ["date", "description", "amount", "category"]
         self.balance = 0.0
         self.name = name
-        self.next_id = MIN + 1
+        self.MIN_ID = 1000  # subject to change later
+        self.MAX_ID = 9999  # subject to change later
+        self.next_id = self.MIN_ID + 1
 
     def get_balance(self):
         return self.balance
@@ -67,8 +67,9 @@ class BudgetTracker:
         try:
             search_key = int(user_input)
 
-            if search_key < MIN or search_key > MAX:
-                raise ValueError(f"ID must be in range of {MIN} - {MAX}")
+            if search_key < self.MIN_ID or search_key > self.MAX_ID:
+                raise ValueError(
+                    f"ID must be in range of {self.MIN_ID} - {self.MAX_ID}")
 
             self.transactions = list(
                 filter(lambda d: d.get('id') != search_key, self.transactions))
