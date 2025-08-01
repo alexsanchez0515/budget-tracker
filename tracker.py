@@ -13,6 +13,7 @@ class BudgetTracker:
         self.MIN_ID = 1001  # subject to change later
         self.MAX_ID = 9999  # subject to change later
         self.next_id = self.MIN_ID
+        self.exit_keyword = 'exit'
 
     def get_balance(self):
         return self.balance
@@ -62,33 +63,38 @@ class BudgetTracker:
             "\nEnter the transaction ID you would like to edit, or type done: ")
 
         try:
-            if user_input.lower() == "done":
+            if user_input.lower() == self.exit_keyword:
                 print("Exiting...")
                 return
 
-            search_key = int(user_input)
+            search_keyID = int(user_input)
 
-            if search_key < self.MIN_ID or search_key > self.MAX_ID:
+            if search_keyID < self.MIN_ID or search_keyID > self.MAX_ID:
                 raise ValueError(
                     f"ID must be in range of {self.MIN_ID} - {self.MAX_ID}")
 
             while True:
-                selected = self.select_transaction(search_key)
+                selected_transaction = self.select_transaction(search_keyID)
 
                 for c in self.options:
                     print(f"{c.title()}")
                 choice = input(
-                    "\nEnter an option to edit from the list above: ")
+                    "\nEnter an option to edit from the list above: ").lower()
 
                 match choice:
                     case 'date':
-                        self.edit_date(selected)
+                        self.edit_field(selected_transaction, "date")
                     case 'description':
-                        self.edit_description(selected)
+                        self.edit_field(selected_transaction, "description")
                     case 'amount':
-                        self.edit_amount(selected)
+                        self.edit_field(selected_transaction, "amount")
                     case 'category':
-                        self.edit_category(selected)
+                        self.edit_field(selected_transaction, "category")
+                    case 'type':
+                        self.edit_field(selected_transaction, "type")
+                    case self.exit_keyword:
+                        print("Exiting...")
+                        break
                     case _:
                         print("Invalid option. Choose an option from the list.")
 
@@ -117,20 +123,35 @@ class BudgetTracker:
     def select_transaction(self, id):
         for t in self.transactions:
             if t['id'] == id:
+                symbol = '+' if t['type'] == 'income' else '-'
                 print(
-                    f"\n\tSelected transaction\n{t['type'].title()}: ${t['amount']:.2f} - {t['date']}\n")
+                    f"\n\tSelected transaction\n{t['category'].title()} - {t['description']} - {t['type'].title()}: {symbol}${t['amount']:.2f} - {t['date']}\n")
                 return t
             else:
                 print("Invalid choice.")
 
-    def edit_date(self, transaction):
-        pass
+    def edit_field(self, transaction, field):
+        print("FIXME: Input validation.")
+        t_id = self.get_transaction_id(transaction)
+        print(f"\nEditing field: {field.title()}")
+        print(f"Current {field.title()} value: {transaction[field]}")
+        self.get_validator()
+        new_field = input(f"\nEnter new {field}: ")
+        transaction[field] = new_field
+        self.update_transaction(transaction)
+        print(f"{field.title()} updated successfully!\n")
 
-    def edit_amount(self, transaction):
-        pass
+    def update_transaction(self, transaction):
+        t_id = transaction['id']
+        self.transactions = list(
+            filter(lambda d: d.get('id') != t_id, self.transactions))
+        self.transactions.append(transaction)
 
-    def edit_description(self, transaction):
-        pass
+    def get_validator(self):
+        print("\nFIXME: get_validator() functionality.")
 
-    def edit_category(self, transaction):
-        pass
+    def validator(self):
+        print("\nFIXME: validator() functionality.")
+
+    def get_transaction_id(self, transaction):
+        return transaction['id']
