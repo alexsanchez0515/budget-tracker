@@ -135,8 +135,9 @@ class BudgetTracker:
         t_id = self.get_transaction_id(transaction)
         print(f"\nEditing field: {field.title()}")
         print(f"Current {field.title()} value: {transaction[field]}")
-        self.get_validator()
+        validator = self.get_validator(field)
         new_field = input(f"\nEnter new {field}: ")
+        validator(field)
         transaction[field] = new_field
         self.update_transaction(transaction)
         print(f"{field.title()} updated successfully!\n")
@@ -147,11 +148,33 @@ class BudgetTracker:
             filter(lambda d: d.get('id') != t_id, self.transactions))
         self.transactions.append(transaction)
 
-    def get_validator(self):
-        print("\nFIXME: get_validator() functionality.")
+    def get_validator(self, field_name):
+        match field_name:
+            case 'date':
+                return self.validate_date
+            case 'amount':
+                return self.validate_amount
+            case 'category':
+                return self.validate_category
+            case 'type':
+                return self.validate_type
+            case 'description':
+                return self.validate_description
 
-    def validator(self):
-        print("\nFIXME: validator() functionality.")
+    def validate_amount(self, field_name):
+        print("\nFIXME: validate amount functionality.")
+
+    def validate_date(self, field_name):
+        print("\nFIXME: validate date functionality.")
+
+    def validate_category(self, field_name):
+        print("\nFIXME: validate date functionality.")
+
+    def validate_type(self, field_name):
+        print("\nFIXME: validate date functionality.")
+
+    def validate_description(self, field_name):
+        print("\nFIXME: validate date functionality.")
 
     def get_transaction_id(self, transaction):
         return transaction['id']
