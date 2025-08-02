@@ -132,7 +132,6 @@ class BudgetTracker:
 
     def edit_field(self, transaction, field):
 
-        print("FIXME: Input validation.")
         print(f"\nEditing field: {field.title()}")
         print(f"Current {field.title()} value: {transaction[field]}")
 
@@ -140,17 +139,16 @@ class BudgetTracker:
             validator = self.get_validator(field)
             new_field = input(f"\nEnter new {field}: ")
 
-            update = validator(new_field)
-
-            if (update != False):
+            try:
+                update = validator(new_field)
                 self.update_transaction(transaction, field, update)
                 print(f"{field.title()} updated successfully!\n")
                 break
-            else:
-                print(f"Error: Incorrect input for selected field - '{field}'")
+            except ValueError as e:
+                print(f"Error: {e}")
                 continue
 
-    def update_transaction(self, transaction, field, update):
+    def update_transaction(self, transaction: list, field: str, update):
         t_id = transaction['id']
         transaction[field] = update
         self.transactions = list(
@@ -171,11 +169,13 @@ class BudgetTracker:
                 return self.validate_description
 
     def validate_amount(self, field):
-        print("\nFIXME: validate amount functionality.")
         try:
-            return float(field)
-        except:
-            return False
+            amount = float(field)
+            if (amount <= 0):
+                raise ValueError("Amount must be greater than zero.")
+            return amount
+        except ValueError:
+            raise ValueError("Amount must be a valid number.")
 
     def validate_date(self, field):
         print("\nFIXME: validate date functionality.")
@@ -184,14 +184,21 @@ class BudgetTracker:
         print("\nFIXME: validate date functionality.")
 
     def validate_type(self, field):
-        print("\nFIXME: validate date functionality.")
+        print("\nFIXME: dont allow user to update 'type' with same type.")
         if (field.lower() == 'income' or field.lower() == 'expense'):
             return field
         else:
             return False
 
     def validate_description(self, field):
-        print("\nFIXME: validate date functionality.")
+        print("\nFIXME: validate desc functionality.")
+        if len(field.strip()) < 3:
+            raise ValueError(
+                "Description is too short. Must be longer than 3 characters.")
+        if len(field.strip()) > 100:
+            raise ValueError(
+                "Description is too long. Must be shorter than 100 characters")
+        return field.strip()
 
     def get_transaction_id(self, transaction):
         return transaction['id']
