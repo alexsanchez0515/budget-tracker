@@ -131,16 +131,25 @@ class BudgetTracker:
                 print("Invalid choice.")
 
     def edit_field(self, transaction, field):
+
         print("FIXME: Input validation.")
         t_id = self.get_transaction_id(transaction)
         print(f"\nEditing field: {field.title()}")
         print(f"Current {field.title()} value: {transaction[field]}")
-        validator = self.get_validator(field)
-        new_field = input(f"\nEnter new {field}: ")
-        validator(field)
-        transaction[field] = new_field
-        self.update_transaction(transaction)
-        print(f"{field.title()} updated successfully!\n")
+
+        while True:
+            validator = self.get_validator(field)
+            new_field = input(f"\nEnter new {field}: ")
+
+            validated_field = validator(new_field)
+
+            if (validated_field != False):
+                self.update_transaction(transaction)
+                print(f"{field.title()} updated successfully!\n")
+                break
+            else:
+                print(f"Error: Incorrect input for selected field - '{field}'")
+                continue
 
     def update_transaction(self, transaction):
         t_id = transaction['id']
@@ -161,19 +170,23 @@ class BudgetTracker:
             case 'description':
                 return self.validate_description
 
-    def validate_amount(self, field_name):
+    def validate_amount(self, field):
         print("\nFIXME: validate amount functionality.")
+        if (type(field) == float):
+            return field
+        else:
+            return False
 
-    def validate_date(self, field_name):
+    def validate_date(self, field):
         print("\nFIXME: validate date functionality.")
 
-    def validate_category(self, field_name):
+    def validate_category(self, field):
         print("\nFIXME: validate date functionality.")
 
-    def validate_type(self, field_name):
+    def validate_type(self, field):
         print("\nFIXME: validate date functionality.")
 
-    def validate_description(self, field_name):
+    def validate_description(self, field):
         print("\nFIXME: validate date functionality.")
 
     def get_transaction_id(self, transaction):
