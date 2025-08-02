@@ -184,11 +184,11 @@ class BudgetTracker:
         print("\nFIXME: validate date functionality.")
 
     def validate_type(self, field):
-        print("\nFIXME: dont allow user to update 'type' with same type.")
-        if (field.lower() == 'income' or field.lower() == 'expense'):
-            return field
-        else:
-            return False
+        type_choice = ['income', 'expense']
+        field = field.lower().strip()
+        if (field not in type_choice):
+            raise ValueError("Type must be either 'income' or 'expense'")
+        return field
 
     def validate_description(self, field):
         print("\nFIXME: validate desc functionality.")
