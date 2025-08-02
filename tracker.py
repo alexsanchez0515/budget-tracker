@@ -7,7 +7,7 @@ class BudgetTracker:
 
     def __init__(self, name: str):
         self.transactions = []
-        self.options = ["date", "description", "amount", "category"]
+        self.options = ["date", "description", "amount", "category", "type"]
         self.balance = 0.0
         self.name = name
         self.MIN_ID = 1001  # subject to change later
@@ -133,7 +133,6 @@ class BudgetTracker:
     def edit_field(self, transaction, field):
 
         print("FIXME: Input validation.")
-        t_id = self.get_transaction_id(transaction)
         print(f"\nEditing field: {field.title()}")
         print(f"Current {field.title()} value: {transaction[field]}")
 
@@ -141,18 +140,19 @@ class BudgetTracker:
             validator = self.get_validator(field)
             new_field = input(f"\nEnter new {field}: ")
 
-            validated_field = validator(new_field)
+            update = validator(new_field)
 
-            if (validated_field != False):
-                self.update_transaction(transaction)
+            if (update != False):
+                self.update_transaction(transaction, field, update)
                 print(f"{field.title()} updated successfully!\n")
                 break
             else:
                 print(f"Error: Incorrect input for selected field - '{field}'")
                 continue
 
-    def update_transaction(self, transaction):
+    def update_transaction(self, transaction, field, update):
         t_id = transaction['id']
+        transaction[field] = update
         self.transactions = list(
             filter(lambda d: d.get('id') != t_id, self.transactions))
         self.transactions.append(transaction)
@@ -172,9 +172,9 @@ class BudgetTracker:
 
     def validate_amount(self, field):
         print("\nFIXME: validate amount functionality.")
-        if (type(field) == float):
-            return field
-        else:
+        try:
+            return float(field)
+        except:
             return False
 
     def validate_date(self, field):
@@ -185,6 +185,10 @@ class BudgetTracker:
 
     def validate_type(self, field):
         print("\nFIXME: validate date functionality.")
+        if (field.lower() == 'income' or field.lower() == 'expense'):
+            return field
+        else:
+            return False
 
     def validate_description(self, field):
         print("\nFIXME: validate date functionality.")
