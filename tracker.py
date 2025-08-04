@@ -133,11 +133,13 @@ class BudgetTracker:
     def edit_field(self, transaction, field):
 
         print(f"\nEditing field: {field.title()}")
-        print(f"Current {field.title()} value: {transaction[field]}")
+
+        dollar_sign = "$" if field.lower() == 'amount' else ""
+        print(f"Current {field} value: {dollar_sign}{transaction[field]}")
 
         while True:
             validator = self.get_validator(field)
-            new_field = input(f"\nEnter new {field}: ")
+            new_field = input(f"\nEnter new {field}: {dollar_sign}")
 
             try:
                 update = validator(new_field)
@@ -148,7 +150,7 @@ class BudgetTracker:
                 print(f"Error: {e}")
                 continue
 
-    def update_transaction(self, transaction: list, field: str, update):
+    def update_transaction(self, transaction: list, field, update):
         t_id = transaction['id']
         transaction[field] = update
         self.transactions = list(
@@ -180,7 +182,7 @@ class BudgetTracker:
     def validate_date(self, field):
         print("\nFIXME: validate date functionality.")
 
-    def validate_category(self, field: str):
+    def validate_category(self, field):
         field = field.strip().lower()
         if not field.isalpha():
             raise ValueError("Category must be text only.")
@@ -192,14 +194,14 @@ class BudgetTracker:
                 "Category is too long. Must be shorter than 20 characters")
         return field.title()
 
-    def validate_type(self, field: str):
+    def validate_type(self, field):
         type_choice = ['income', 'expense']
         field = field.lower().strip()
         if (field not in type_choice):
             raise ValueError("Type must be either 'income' or 'expense'")
         return field.title()
 
-    def validate_description(self, field: str):
+    def validate_description(self, field):
         print("\nFIXME: validate desc functionality.")
         field = field.lower().strip()
         if len(field) < 3:
