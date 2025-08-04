@@ -180,25 +180,35 @@ class BudgetTracker:
     def validate_date(self, field):
         print("\nFIXME: validate date functionality.")
 
-    def validate_category(self, field):
-        print("\nFIXME: validate date functionality.")
+    def validate_category(self, field: str):
+        field = field.strip().lower()
+        if not field.isalpha():
+            raise ValueError("Category must be text only.")
+        if len(field) < 3:
+            raise ValueError(
+                "Category is too short. Must be longer than 3 characters.")
+        if len(field) > 20:
+            raise ValueError(
+                "Category is too long. Must be shorter than 20 characters")
+        return field.title()
 
-    def validate_type(self, field):
+    def validate_type(self, field: str):
         type_choice = ['income', 'expense']
         field = field.lower().strip()
         if (field not in type_choice):
             raise ValueError("Type must be either 'income' or 'expense'")
-        return field
+        return field.title()
 
-    def validate_description(self, field):
+    def validate_description(self, field: str):
         print("\nFIXME: validate desc functionality.")
-        if len(field.strip()) < 3:
+        field = field.lower().strip()
+        if len(field) < 3:
             raise ValueError(
                 "Description is too short. Must be longer than 3 characters.")
-        if len(field.strip()) > 100:
+        if len(field) > 100:
             raise ValueError(
                 "Description is too long. Must be shorter than 100 characters")
-        return field.strip()
+        return field.title()
 
     def get_transaction_id(self, transaction):
         return transaction['id']
