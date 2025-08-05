@@ -50,7 +50,12 @@ class BudgetTracker:
             try:
 
                 user_type = input(
-                    "Enter a transaction type >> (Income or Expense): ")
+                    "Enter a transaction type, (Income or Expense), or type '0' to return to main menu: ")
+
+                if user_type == '0':
+                    print("Returning to main menu")
+                    return
+
                 v_type = self.validate_type(user_type)
                 break
             except ValueError as e:
@@ -58,7 +63,13 @@ class BudgetTracker:
         while True:
             try:
 
-                user_description = input("Enter a description: ")
+                user_description = input(
+                    "Enter a description, or type '0' to return to main menu: ")
+
+                if user_description == '0':
+                    print("Returning to main menu")
+                    return
+
                 v_description = self.validate_description(user_description)
                 break
             except ValueError as e:
@@ -67,7 +78,12 @@ class BudgetTracker:
             try:
 
                 user_category = input(
-                    "Enter a category >> (Work, Family, Bills, etc.): ")
+                    "Enter a category, (Work, Family, Bills, etc.), or type '0' to return to main menu: : ")
+
+                if user_category == '0':
+                    print("Returning to main menu")
+                    return
+
                 v_category = self.validate_category(user_category)
                 break
             except ValueError as e:
@@ -75,7 +91,13 @@ class BudgetTracker:
         while True:
             try:
 
-                user_amount = input("Enter an amount: ")
+                user_amount = input(
+                    "Enter an amount, or type '0' to return to main menu: ")
+
+                if user_amount == '0':
+                    print("Returning to main menu")
+                    return
+
                 v_amount = self.validate_amount(user_amount)
                 break
             except ValueError as e:
@@ -83,7 +105,13 @@ class BudgetTracker:
         while True:
             try:
 
-                user_date = input("Enter a date >> (MM/DD/YYYY): ")
+                user_date = input(
+                    "Enter a date, (MM/DD/YYYY), or type '0' to return to main menu:  ")
+
+                if user_date == '0':
+                    print("Returning to main menu")
+                    return
+
                 v_date = self.validate_date(user_date)
                 break
             except ValueError as e:
