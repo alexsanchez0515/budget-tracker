@@ -1,14 +1,10 @@
-from util import Utilities
-
-utils = Utilities()
-
-
 class BudgetTracker:
 
     def __init__(self, name: str):
         self.transactions = []
-        self.options = ["date", "description", "amount", "category", "type"]
-        self.balance = 0.0
+        self.options = ["1. date", "2. description", "3. amount",
+                        "4. category", "5. type", "0. return to main menu"]
+        self.balance = 0
         self.name = name
         self.MIN_ID = 1001  # subject to change later
         self.MAX_ID = 9999  # subject to change later
@@ -21,11 +17,23 @@ class BudgetTracker:
     def get_name(self):
         return self.name
 
+    def init_balance(self):
+        if len(self.transactions) > 0:
+            for t in self.transactions:
+                if t['type'] == "Income":
+                    self.balance += float(t['amount'])
+                if t['type]'] == "Expense":
+                    self.balance -= float(t['amount'])
+
+    def init_transactions(self):
+        # function to initialize saved transactions from previous use
+        pass
+
     def update_balance(self, t_type: str, amount: float):
-        if t_type == "income":
-            self.balance = utils.add(self.balance, amount)
-        elif t_type == "expense":
-            self.balance = utils.sub(self.balance, amount)
+        if t_type == "Income":
+            self.balance += amount
+        elif t_type == "Expense":
+            self.balance -= amount
 
     def view_transactions(self):
 
@@ -37,33 +45,71 @@ class BudgetTracker:
             print(
                 f"{t['type'].title()}: {t['description']} - ${t['amount']:.2f} on {t['date']} - ID: {t['id']}")
 
-    def add_transaction(self, t_type: str, desc: str, category: str, amount: float, date: str = None):
-        t_type = t_type.lower()
+    def add_transaction(self):
+        while True:
+            try:
 
-        if t_type not in ("expense", "income"):
-            raise ValueError(
-                "Invalid type. Please use 'income' or 'expense' for transaction type.")
+                user_type = input(
+                    "Enter a transaction type >> (Income or Expense): ")
+                v_type = self.validate_type(user_type)
+                break
+            except ValueError as e:
+                print(f"Error: {e}. Please try again.")
+        while True:
+            try:
 
-        if date is None:
-            date = utils.format_date(utils.get_date())
-        else:
-            pass
+                user_description = input("Enter a description: ")
+                v_description = self.validate_description(user_description)
+                break
+            except ValueError as e:
+                print(f"Error: {e}. Please try again.")
+        while True:
+            try:
+
+                user_category = input(
+                    "Enter a category >> (Work, Family, Bills, etc.): ")
+                v_category = self.validate_category(user_category)
+                break
+            except ValueError as e:
+                print(f"Error: {e}. Please try again.")
+        while True:
+            try:
+
+                user_amount = input("Enter an amount: ")
+                v_amount = self.validate_amount(user_amount)
+                break
+            except ValueError as e:
+                print(f"Error: {e}. Please try again.")
+        while True:
+            try:
+
+                user_date = input("Enter a date >> (MM/DD/YYYY): ")
+                v_date = self.validate_date(user_date)
+                break
+            except ValueError as e:
+                print(f"Error: {e}. Please try again.")
 
         transaction = {
-            "type": t_type,
-            "description": desc,
-            "category": category,
-            "amount": amount,
-            "date": date,
+            "type": v_type,
+            "description": v_description,
+            "category": v_category,
+            "amount": v_amount,
+            "date": v_date,
             "id": self.next_id
         }
 
         self.transactions.append(transaction)
-        self.update_balance(t_type, amount)
+        self.update_balance(v_type, v_amount)
         self.next_id += 1
-        print(f"{t_type.title()} was added: {desc} - ${amount:.2f}")
+        print(f"{v_type} was added: {v_description} - ${v_amount:.2f}")
+        print(f"${self.get_balance():.2f}")
 
     def edit_transaction(self):
+
+        if len(self.transactions) == 0:
+            print("No transactions to edit currently.")
+            return
+
         user_input = input(
             "\nEnter the transaction ID you would like to edit, or type '0' to return to main menu: ")
 
@@ -84,7 +130,7 @@ class BudgetTracker:
                 for c in self.options:
                     print(f"{c.title()}")
                 choice = input(
-                    "\nEnter an option to edit from the list above: ").lower()
+                    "\nEnter an option to edit from the list above, or type '0' to return to main menu: ").lower()
 
                 match choice:
                     case 'date':
@@ -191,6 +237,7 @@ class BudgetTracker:
 
     def validate_date(self, field):
         print("\nFIXME: validate date functionality.")
+        return field
 
     def validate_category(self, field):
         field = field.strip().lower()

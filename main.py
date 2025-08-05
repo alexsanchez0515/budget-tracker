@@ -1,10 +1,33 @@
 from tracker import BudgetTracker
 from util import Utilities
 
+test_transaction_in = {
+    "type": "Income",
+    "description": "Transaction for Testing Purposes - In",
+    "category": "Test In",
+    "amount": 5000.00,
+    "date": "08/04/2025",
+    "id": 1001
+}
+test_transaction_ex = {
+    "type": "Expense",
+    "description": "Transaction for Testing Purposes - Ex",
+    "category": "Test Ex",
+    "amount": 3456.78,
+    "date": "08/04/2025",
+    "id": 1002
+}
+
 
 def main():
     # initializing the tracker file
     my_tracker = BudgetTracker("Alex")
+    my_tracker.transactions.append(test_transaction_in)
+    my_tracker.transactions.append(test_transaction_ex)
+    my_tracker.update_balance(
+        test_transaction_in['type'], test_transaction_in['amount'])
+    my_tracker.update_balance(
+        test_transaction_ex['type'], test_transaction_ex['amount'])
 
     options = ["1", "2", "3", "4", "5", "6"]
 
@@ -14,10 +37,7 @@ def main():
 
         match choice:
             case "1":
-                # function to create transaction
-                print(
-                    "FIXME: function to create_transaction(), then call add_transaction()")
-                pass
+                my_tracker.add_transaction()
             case "2":
                 my_tracker.edit_transaction()
             case "3":
@@ -33,13 +53,6 @@ def main():
                 break
             case _:
                 print("Invalid input.")
-                # start of user program loop
-                # my_tracker.add_transaction("income", "Test1", "Test1", 528.37)
-                # my_tracker.add_transaction("expense", "Test2", "Test2", 180.81)
-                # my_tracker.add_transaction("income", "Test3", "Test3", 344.45)
-
-                # my_tracker.edit_transaction()
-                # my_tracker.view_transactions()
 
 
 if __name__ == "__main__":
