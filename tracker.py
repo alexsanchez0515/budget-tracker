@@ -1,3 +1,6 @@
+from util import Utilities as util
+
+
 class BudgetTracker:
 
     def __init__(self, name: str):
@@ -8,7 +11,6 @@ class BudgetTracker:
         self.name = name
         self.MIN_ID = 1001  # subject to change later
         self.MAX_ID = 9999  # subject to change later
-        self.next_id = self.MIN_ID
         self.return_key = '0'
 
     def get_balance(self):
@@ -123,12 +125,11 @@ class BudgetTracker:
             "category": v_category,
             "amount": v_amount,
             "date": v_date,
-            "id": self.next_id
+            "id": util.random_id(self.MIN_ID, self.MAX_ID)
         }
 
         self.transactions.append(transaction)
         self.update_balance(v_type, v_amount)
-        self.next_id += 1
         print(f"{v_type} was added: {v_description} - ${v_amount:.2f}")
         print(f"${self.get_balance():.2f}")
 

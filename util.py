@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 
 
 class Utilities:
@@ -14,3 +15,6 @@ class Utilities:
 
     def get_date(self):
         return datetime.now()
+
+    def random_id(min, max):
+        return random.randint(min, max)

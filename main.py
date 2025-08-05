@@ -7,7 +7,7 @@ test_transaction_in = {
     "category": "Test In",
     "amount": 5000.00,
     "date": "08/04/2025",
-    "id": 1001
+    "id": Utilities.random_id(1001, 9999)
 }
 test_transaction_ex = {
     "type": "Expense",
@@ -15,7 +15,7 @@ test_transaction_ex = {
     "category": "Test Ex",
     "amount": 3456.78,
     "date": "08/04/2025",
-    "id": 1002
+    "id": Utilities.random_id(1001, 9999)
 }
 
 
