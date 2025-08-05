@@ -187,7 +187,6 @@ class BudgetTracker:
 
         try:
             if user_input == self.return_key:
-                # return user to main menu
                 print("Returning to main menu...")
                 return
 
@@ -264,9 +263,13 @@ class BudgetTracker:
         except ValueError:
             raise ValueError("Amount must be a valid number.")
 
-    def validate_date(self, field):
-        print("\nFIXME: validate date functionality.")
-        return field
+    def validate_date(self, field: str):
+        try:
+            valid_date = util.format_date(field)
+            return valid_date
+        except ValueError:
+            raise ValueError(
+                "Date must be in MM/DD/YYYY format, and date must be valid")
 
     def validate_category(self, field):
         field = field.strip().lower()
