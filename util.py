@@ -10,7 +10,7 @@ class Utilities:
         return x - y
 
     def format_date(self, date):
-        return date.strftime("%Y-%m-%d %H:%M:%S")
+        return date.strftime("%m/%d/%Y")
 
     def get_date(self):
         return datetime.now()

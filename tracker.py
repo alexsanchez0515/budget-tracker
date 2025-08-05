@@ -13,7 +13,7 @@ class BudgetTracker:
         self.MIN_ID = 1001  # subject to change later
         self.MAX_ID = 9999  # subject to change later
         self.next_id = self.MIN_ID
-        self.exit_keyword = 'exit'
+        self.return_key = '0'
 
     def get_balance(self):
         return self.balance
@@ -28,6 +28,11 @@ class BudgetTracker:
             self.balance = utils.sub(self.balance, amount)
 
     def view_transactions(self):
+
+        if len(self.transactions) == 0:
+            print("No transactions to view currently.")
+            return
+
         for t in self.transactions:
             print(
                 f"{t['type'].title()}: {t['description']} - ${t['amount']:.2f} on {t['date']} - ID: {t['id']}")
@@ -60,11 +65,11 @@ class BudgetTracker:
 
     def edit_transaction(self):
         user_input = input(
-            "\nEnter the transaction ID you would like to edit, or type done: ")
+            "\nEnter the transaction ID you would like to edit, or type '0' to return to main menu: ")
 
         try:
-            if user_input.lower() == self.exit_keyword:
-                print("Exiting...")
+            if user_input.lower() == self.return_key:
+                print("Returning to main menu")
                 return
 
             search_keyID = int(user_input)
@@ -92,8 +97,8 @@ class BudgetTracker:
                         self.edit_field(selected_transaction, "category")
                     case 'type':
                         self.edit_field(selected_transaction, "type")
-                    case self.exit_keyword:
-                        print("Exiting...")
+                    case self.return_key:
+                        print("Returning to main menu")
                         break
                     case _:
                         print("Invalid option. Choose an option from the list.")
@@ -103,9 +108,14 @@ class BudgetTracker:
 
     def delete_transaction(self):
         user_input = input(
-            "\nEnter the transaction ID you would like to delete: ")
+            "\nEnter the transaction ID you would like to delete, or type '0' to return to main menu: ")
 
         try:
+            if user_input == self.return_key:
+                # return user to main menu
+                print("Returning to main menu...")
+                return
+
             search_key = int(user_input)
 
             if search_key < self.MIN_ID or search_key > self.MAX_ID:
@@ -202,7 +212,6 @@ class BudgetTracker:
         return field.title()
 
     def validate_description(self, field):
-        print("\nFIXME: validate desc functionality.")
         field = field.lower().strip()
         if len(field) < 3:
             raise ValueError(
@@ -214,3 +223,12 @@ class BudgetTracker:
 
     def get_transaction_id(self, transaction):
         return transaction['id']
+
+    def display_menu(self):
+        print("\n\tBudget Tracker Menu\n")
+        print("1.) Add Transaction")
+        print("2.) Edit Transaction")
+        print("3.) Delete Transaction")
+        print("4.) View Transaction")
+        print("5.) View Balance")
+        print("6.) Exit Tracker\n")
