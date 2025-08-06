@@ -1,5 +1,5 @@
 from tracker import BudgetTracker
-from util import Utilities
+from utilities import Utilities
 
 
 def main():
@@ -14,14 +14,14 @@ def main():
 
         match choice:
             case "1":
-                my_tracker.add_transaction()
+                my_tracker.prompt_to_add()
             case "2":
-                my_tracker.edit_transaction()
+                my_tracker.prompt_to_update()
             case "3":
-                my_tracker.delete_transaction()
+                my_tracker.prompt_to_delete()
             case "4":
                 print("\nViewing transactions:")
-                my_tracker.view_transactions()
+                my_tracker.view_transaction_all()
             case "5":
                 print(f"Current balance: ${my_tracker.get_balance():.2f}")
             case "6":

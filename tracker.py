@@ -1,4 +1,4 @@
-from util import Utilities as util
+from utilities import Utilities as util
 from database import BudgetTrackerDB
 
 
@@ -14,7 +14,7 @@ class BudgetTracker:
         self.MIN_ID = 1001  # subject to change later
         self.MAX_ID = 9999  # subject to change later
         self.return_key = '0'
-        self.db.clear()  # for testing purposes, to deal with 1 transaction for now
+        self.db.clear()  # for testing purposes, to work with 1 transaction for now
 
     def get_balance(self):
         return self.balance
@@ -41,11 +41,18 @@ class BudgetTracker:
         elif t_type == "expense":
             self.balance -= amount
 
-    def view_transactions(self):
-        for row in self.db.get_transactions():
+    def view_transaction_all(self):
+        for row in self.db.get_transaction_all():
             print(row)
 
-    def add_transaction(self):
+    def view_transaction_one(self, id):
+        transaction = self.db.get_transaction_one(id)
+        if transaction:
+            print("\nUpdated transaction:")
+            print(
+                f"ID: {transaction[0]} | Type: {transaction[1].title()} | Category: {transaction[2].title()} | Description: {transaction[3].title()} | Amount: ${transaction[4]:.2f} | Date: {transaction[5]}")
+
+    def prompt_to_add(self):
         while True:
             try:
 
@@ -120,12 +127,15 @@ class BudgetTracker:
         # type, category, description, amount, date
         transaction = (v_type, v_category, v_description, v_amount, v_date)
 
-        self.db.add_exec(transaction)
+        self.db.add_transaction(transaction)
         self.update_balance(v_type, v_amount)
-        print(f"{v_type.title()} was added: {v_description.title()} - ${v_amount:.2f}")
-        print(f"${self.get_balance():.2f}")
+        # id = self.db.get_field_value(id, field=id)
+        print("\nTransaction added:")
+        print(
+            f"Type: {v_type.title()} | Category: {v_category.title()} | Description: {v_description.title()} | Amount: ${v_amount:.2f} | Date: {v_date}")
 
-    def edit_transaction(self):
+    def prompt_to_update(self):
+        self.view_transaction_all()
 
         user_input = input(
             "\nEnter the transaction ID you would like to edit, or type '0' to return to main menu: ")
@@ -136,30 +146,27 @@ class BudgetTracker:
                 return
 
             search_keyID = int(user_input)
-
-            if search_keyID < self.MIN_ID or search_keyID > self.MAX_ID:
-                raise ValueError(
-                    f"ID must be in range of {self.MIN_ID} - {self.MAX_ID}")
+            self.db.validate_transaction(search_keyID)
 
             while True:
-                selected_transaction = self.select_transaction(search_keyID)
-
+                print("")
                 for c in self.options:
                     print(f"{c.title()}")
+
                 choice = input(
                     "\nEnter an option to edit from the list above, or type '0' to return to main menu: ").lower()
 
                 match choice:
                     case 'date':
-                        self.edit_field(selected_transaction, "date")
+                        self.edit_field(search_keyID, "date")
                     case 'description':
-                        self.edit_field(selected_transaction, "description")
+                        self.edit_field(search_keyID, "description")
                     case 'amount':
-                        self.edit_field(selected_transaction, "amount")
+                        self.edit_field(search_keyID, "amount")
                     case 'category':
-                        self.edit_field(selected_transaction, "category")
+                        self.edit_field(search_keyID, "category")
                     case 'type':
-                        self.edit_field(selected_transaction, "type")
+                        self.edit_field(search_keyID, "type")
                     case self.return_key:
                         print("Returning to main menu")
                         break
@@ -169,7 +176,8 @@ class BudgetTracker:
         except ValueError as e:
             print(f"Error: {e}")
 
-    def delete_transaction(self):
+    def prompt_to_delete(self):
+        self.view_transaction_all()
         user_input = input(
             "\nEnter the transaction ID you would like to delete, or type '0' to return to main menu: ")
 
@@ -187,48 +195,38 @@ class BudgetTracker:
                 print("Deletion cancelled.")
                 return
 
-            self.db.delete_exec(search_id)
+            self.db.delete_transaction(search_id)
             print(f"\nTransaction ID #{search_id} has been deleted.")
 
         except ValueError as e:
             print(f"Error: {e}")
 
-    def select_transaction(self, id):
-        for t in self.transactions:
-            if t['id'] == id:
-                symbol = '+' if t['type'] == 'income' else '-'
-                print(
-                    f"\n\tSelected transaction\n{t['category'].title()} - {t['description']} - {t['type'].title()}: {symbol}${t['amount']:.2f} - {t['date']}\n")
-                return t
-            else:
-                print("Transaction ID not found.")
-
-    def edit_field(self, transaction, field):
+    def edit_field(self, id, field):
 
         print(f"\nEditing field: {field.title()}")
 
         dollar_sign = "$" if field.lower() == 'amount' else ""
-        print(f"Current {field} value: {dollar_sign}{transaction[field]}")
+        # print(f"Current {field} value: {dollar_sign}{transaction[field]}")
 
         while True:
             validator = self.get_validator(field)
             new_field = input(f"\nEnter new {field}: {dollar_sign}")
+            # current_value = self.db.get_field_val(id, field)
 
             try:
                 update = validator(new_field)
-                self.update_transaction(transaction, field, update)
-                print(f"{field.title()} updated successfully!\n")
+                confirm = input(
+                    f"Are you sure you want to update \"(current_value)\" to {update}? (y/n): ").lower()
+                if confirm != 'y':
+                    print("Update cancelled.")
+                    break
+
+                self.db.update_transaction(id, update, field)
+                self.view_transaction_one(id)
                 break
             except ValueError as e:
                 print(f"Error: {e}")
                 continue
-
-    def update_transaction(self, transaction: list, field, update):
-        t_id = transaction['id']
-        transaction[field] = update
-        self.transactions = list(
-            filter(lambda d: d.get('id') != t_id, self.transactions))
-        self.transactions.append(transaction)
 
     def get_validator(self, field_name):
         match field_name:
