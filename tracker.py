@@ -5,7 +5,8 @@ from database import BudgetTrackerDB
 class BudgetTracker:
 
     def __init__(self, name: str):
-        self.transactions = []
+        self.db = BudgetTrackerDB(
+            "C:\\Users\\alexs\\Documents\\Python Portfolio\\Budget Tracker\\tracker.db")
         self.options = ["1. date", "2. description", "3. amount",
                         "4. category", "5. type", "0. return to main menu"]
         self.balance = 0
@@ -13,6 +14,7 @@ class BudgetTracker:
         self.MIN_ID = 1001  # subject to change later
         self.MAX_ID = 9999  # subject to change later
         self.return_key = '0'
+        self.db.clear()  # for testing purposes, to deal with 1 transaction for now
 
     def get_balance(self):
         return self.balance
@@ -24,9 +26,9 @@ class BudgetTracker:
         # function to initialize saved balances from previous use, will implement/update later
         if len(self.transactions) > 0:
             for t in self.transactions:
-                if t['type'] == "Income":
+                if t['type'] == "income":
                     self.balance += float(t['amount'])
-                if t['type'] == "Expense":
+                if t['type'] == "expense":
                     self.balance -= float(t['amount'])
 
     def init_transactions(self):
@@ -34,20 +36,14 @@ class BudgetTracker:
         pass
 
     def update_balance(self, t_type: str, amount: float):
-        if t_type == "Income":
+        if t_type == "income":
             self.balance += amount
-        elif t_type == "Expense":
+        elif t_type == "expense":
             self.balance -= amount
 
     def view_transactions(self):
-
-        if len(self.transactions) == 0:
-            print("No transactions to view currently.")
-            return
-
-        for t in self.transactions:
-            print(
-                f"{t['type'].title()}: {t['description']} - ${t['amount']:.2f} on {t['date']} - ID: {t['id']}")
+        for row in self.db.get_transactions():
+            print(row)
 
     def add_transaction(self):
         while True:
@@ -67,20 +63,6 @@ class BudgetTracker:
         while True:
             try:
 
-                user_description = input(
-                    "Enter a description, or type '0' to return to main menu: ")
-
-                if user_description == '0':
-                    print("Returning to main menu")
-                    return
-
-                v_description = self.validate_description(user_description)
-                break
-            except ValueError as e:
-                print(f"Error: {e}. Please try again.")
-        while True:
-            try:
-
                 user_category = input(
                     "Enter a category, (Work, Family, Bills, etc.), or type '0' to return to main menu: : ")
 
@@ -89,6 +71,20 @@ class BudgetTracker:
                     return
 
                 v_category = self.validate_category(user_category)
+                break
+            except ValueError as e:
+                print(f"Error: {e}. Please try again.")
+        while True:
+            try:
+
+                user_description = input(
+                    "Enter a description, or type '0' to return to main menu: ")
+
+                if user_description == '0':
+                    print("Returning to main menu")
+                    return
+
+                v_description = self.validate_description(user_description)
                 break
             except ValueError as e:
                 print(f"Error: {e}. Please try again.")
@@ -121,25 +117,15 @@ class BudgetTracker:
             except ValueError as e:
                 print(f"Error: {e}. Please try again.")
 
-        transaction = {
-            "type": v_type,
-            "description": v_description,
-            "category": v_category,
-            "amount": v_amount,
-            "date": v_date,
-            "id": util.random_id(self.MIN_ID, self.MAX_ID)
-        }
+        # type, category, description, amount, date
+        transaction = (v_type, v_category, v_description, v_amount, v_date)
 
-        self.transactions.append(transaction)
+        self.db.add_exec(transaction)
         self.update_balance(v_type, v_amount)
         print(f"{v_type.title()} was added: {v_description.title()} - ${v_amount:.2f}")
         print(f"${self.get_balance():.2f}")
 
     def edit_transaction(self):
-
-        if len(self.transactions) == 0:
-            print("No transactions to edit currently.")
-            return
 
         user_input = input(
             "\nEnter the transaction ID you would like to edit, or type '0' to return to main menu: ")
@@ -192,16 +178,17 @@ class BudgetTracker:
                 print("Returning to main menu...")
                 return
 
-            search_key = int(user_input)
+            search_id = int(user_input)
+            self.db.find_transaction(search_id)
 
-            if search_key < self.MIN_ID or search_key > self.MAX_ID:
-                raise ValueError(
-                    f"ID must be in range of {self.MIN_ID} - {self.MAX_ID}")
+            confirm = input(
+                f"Are you sure you want to delete transaction #{search_id}? (y/n): ")
+            if confirm != 'y':
+                print("Deletion cancelled.")
+                return
 
-            self.transactions = list(
-                filter(lambda d: d.get('id') != search_key, self.transactions))
-
-            print(f"\nTransaction ID #{search_key} has been deleted.")
+            self.db.delete_exec(search_id)
+            print(f"\nTransaction ID #{search_id} has been deleted.")
 
         except ValueError as e:
             print(f"Error: {e}")

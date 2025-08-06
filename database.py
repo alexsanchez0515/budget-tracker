@@ -21,26 +21,39 @@ class BudgetTrackerDB:
                             ''')
         self.connect.commit()
 
-    def add_transaction(self, transaction):
-        self.cursor.execute(
-            f'''INSERT INTO {self.table_name} (type, category, description, amount, date) VALUES (?,?,?,?,?)''', transaction)
-        self.connect.commit()
+    def close(self):
+        self.cursor.close()
+        self.connect.close()
+
+    def add_exec(self, transaction):
+        try:
+            self.cursor.execute(
+                f'''INSERT INTO {self.table_name} (type, category, description, amount, date) VALUES (?,?,?,?,?)''', transaction)
+            self.connect.commit()
+        except ValueError as e:
+            raise e("Unable to add transaction to database.")
+
+    def update_exec(self, transaction):
+        # implement functionality
+        pass
+
+    def delete_exec(self, id):
+        try:
+            self.cursor.execute(
+                f'DELETE FROM {self.table_name} WHERE id = ?', (id,))
+            self.connect.commit()
+        except sqlite3.Error as e:
+            print(f"Error deleting transaction: {e}")
 
     def get_transactions(self):
         self.cursor.execute(f'SELECT * FROM {self.table_name}')
         return self.cursor.fetchall()
 
-    def close(self):
-        self.cursor.close()
-        self.connect.close()
-
-    def update_transaction(self, transaction):
-        # implement functionality
-        pass
-
-    def delete_transaction(self, transaction):
-        # implement functionality
-        pass
+    def find_transaction(self, id):
+        self.cursor.execute(
+            f'SELECT * FROM {self.table_name} WHERE id = ?', (id,))
+        if self.cursor.fetchone() is None:
+            raise ValueError(f"Transaction #{id} does not exist.")
 
     # for testing
     def clear(self):
