@@ -1,4 +1,5 @@
 from util import Utilities as util
+from database import BudgetTrackerDB
 
 
 class BudgetTracker:
@@ -20,15 +21,16 @@ class BudgetTracker:
         return self.name
 
     def init_balance(self):
+        # function to initialize saved balances from previous use, will implement/update later
         if len(self.transactions) > 0:
             for t in self.transactions:
                 if t['type'] == "Income":
                     self.balance += float(t['amount'])
-                if t['type]'] == "Expense":
+                if t['type'] == "Expense":
                     self.balance -= float(t['amount'])
 
     def init_transactions(self):
-        # function to initialize saved transactions from previous use
+        # function to initialize saved transactions from previous use, will implement/update later
         pass
 
     def update_balance(self, t_type: str, amount: float):
@@ -130,7 +132,7 @@ class BudgetTracker:
 
         self.transactions.append(transaction)
         self.update_balance(v_type, v_amount)
-        print(f"{v_type} was added: {v_description} - ${v_amount:.2f}")
+        print(f"{v_type.title()} was added: {v_description.title()} - ${v_amount:.2f}")
         print(f"${self.get_balance():.2f}")
 
     def edit_transaction(self):
@@ -212,7 +214,7 @@ class BudgetTracker:
                     f"\n\tSelected transaction\n{t['category'].title()} - {t['description']} - {t['type'].title()}: {symbol}${t['amount']:.2f} - {t['date']}\n")
                 return t
             else:
-                print("Invalid choice.")
+                print("Transaction ID not found.")
 
     def edit_field(self, transaction, field):
 
@@ -281,14 +283,14 @@ class BudgetTracker:
         if len(field) > 20:
             raise ValueError(
                 "Category is too long. Must be shorter than 20 characters")
-        return field.title()
+        return field
 
     def validate_type(self, field):
         type_choice = ['income', 'expense']
         field = field.lower().strip()
         if (field not in type_choice):
             raise ValueError("Type must be either 'income' or 'expense'")
-        return field.title()
+        return field
 
     def validate_description(self, field):
         field = field.lower().strip()
@@ -298,7 +300,7 @@ class BudgetTracker:
         if len(field) > 100:
             raise ValueError(
                 "Description is too long. Must be shorter than 100 characters")
-        return field.title()
+        return field
 
     def get_transaction_id(self, transaction):
         return transaction['id']

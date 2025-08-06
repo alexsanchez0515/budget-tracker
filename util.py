@@ -10,8 +10,8 @@ class Utilities:
     def sub(self, x: float, y: float):
         return x - y
 
-    def format_date(self, date):
-        return date.strftime("%m/%d/%Y")
+    def format_date(date):
+        return datetime.strptime(date, "%m/%d/%Y")
 
     def get_date(self):
         return datetime.now()
