@@ -1,12 +1,10 @@
 from tracker import BudgetTracker
-from utilities import Utilities
+# will use login later in development
+from login import LoginAuthentication
 
-
-def main():
+def main() -> None:
     # initializing the tracker file
     my_tracker = BudgetTracker("Alex")
-
-    options = ["1", "2", "3", "4", "5", "6"]
 
     while True:
         my_tracker.display_menu()

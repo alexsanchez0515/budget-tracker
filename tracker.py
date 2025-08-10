@@ -1,28 +1,29 @@
 from utilities import Utilities as util
 from database import BudgetTrackerDB
+from login import LoginAuthentication
 
 
 class BudgetTracker:
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.db = BudgetTrackerDB(
             "C:\\Users\\alexs\\Documents\\Python Portfolio\\Budget Tracker\\tracker.db")
-        self.options = ["1. date", "2. description", "3. amount",
+        self.options: list = ["1. date", "2. description", "3. amount",
                         "4. category", "5. type", "0. return to main menu"]
-        self.balance = 0
-        self.name = name
-        self.MIN_ID = 1001  # subject to change later
-        self.MAX_ID = 9999  # subject to change later
-        self.return_key = '0'
+        self.balance: float = 0
+        self.name: str = name
+        self.MIN_ID: int = 1001  # subject to change later
+        self.MAX_ID: int = 9999  # subject to change later
+        self.return_key: str = '0'
         self.db.clear()  # for testing purposes, to work with 1 transaction for now
 
-    def get_balance(self):
+    def get_balance(self) -> float:
         return self.balance
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def init_balance(self):
+    def init_balance(self) -> None:
         # function to initialize saved balances from previous use, will implement/update later
         if len(self.transactions) > 0:
             for t in self.transactions:
@@ -31,110 +32,67 @@ class BudgetTracker:
                 if t['type'] == "expense":
                     self.balance -= float(t['amount'])
 
-    def init_transactions(self):
+    def init_transactions(self) -> None:
         # function to initialize saved transactions from previous use, will implement/update later
-        pass
+        ...
 
-    def update_balance(self, t_type: str, amount: float):
+    def update_balance(self, t_type: str, amount: float) -> None:
         if t_type == "income":
             self.balance += amount
         elif t_type == "expense":
             self.balance -= amount
 
-    def view_transaction_all(self):
+    def view_transaction_all(self) -> None:
         for row in self.db.get_transaction_all():
             print(row)
 
-    def view_transaction_one(self, id):
+    def view_transaction_one(self, id: int) -> None:
         transaction = self.db.get_transaction_one(id)
         if transaction:
             print("\nUpdated transaction:")
             print(
                 f"ID: {transaction[0]} | Type: {transaction[1].title()} | Category: {transaction[2].title()} | Description: {transaction[3].title()} | Amount: ${transaction[4]:.2f} | Date: {transaction[5]}")
 
-    def prompt_to_add(self):
+    def get_field_prompt(self, prompt: str) -> None:
         while True:
             try:
 
-                user_type = input(
-                    "Enter a transaction type, (Income or Expense), or type '0' to return to main menu: ")
+                user_type = input(prompt)
 
                 if user_type == '0':
                     print("Returning to main menu")
                     return
 
-                v_type = self.validate_type(user_type)
+                valid_field = self.validate_type(user_type)
                 break
             except ValueError as e:
                 print(f"Error: {e}. Please try again.")
-        while True:
-            try:
+        return valid_field
 
-                user_category = input(
-                    "Enter a category, (Work, Family, Bills, etc.), or type '0' to return to main menu: : ")
-
-                if user_category == '0':
-                    print("Returning to main menu")
-                    return
-
-                v_category = self.validate_category(user_category)
-                break
-            except ValueError as e:
-                print(f"Error: {e}. Please try again.")
-        while True:
-            try:
-
-                user_description = input(
-                    "Enter a description, or type '0' to return to main menu: ")
-
-                if user_description == '0':
-                    print("Returning to main menu")
-                    return
-
-                v_description = self.validate_description(user_description)
-                break
-            except ValueError as e:
-                print(f"Error: {e}. Please try again.")
-        while True:
-            try:
-
-                user_amount = input(
-                    "Enter an amount, or type '0' to return to main menu: ")
-
-                if user_amount == '0':
-                    print("Returning to main menu")
-                    return
-
-                v_amount = self.validate_amount(user_amount)
-                break
-            except ValueError as e:
-                print(f"Error: {e}. Please try again.")
-        while True:
-            try:
-
-                user_date = input(
-                    "Enter a date, (MM/DD/YYYY), or type '0' to return to main menu:  ")
-
-                if user_date == '0':
-                    print("Returning to main menu")
-                    return
-
-                v_date = self.validate_date(user_date)
-                break
-            except ValueError as e:
-                print(f"Error: {e}. Please try again.")
+    def prompt_to_add(self) -> None:
+        valid_type = self.get_field_prompt("Enter a transaction type, (Income or Expense), or type '0' to return to main menu: ")
+        valid_category = self.get_field_prompt("Enter a category, (Work, Family, Bills, etc.), or type '0' to return to main menu: : ")
+        valid_desc = self.get_field_prompt("Enter a description, or type '0' to return to main menu: ")
+        valid_amount = self.get_field_prompt("Enter an amount, or type '0' to return to main menu: ")
+        valid_date = self.get_field_prompt("Enter a date, (MM/DD/YYYY), or type '0' to return to main menu:  ")
 
         # type, category, description, amount, date
-        transaction = (v_type, v_category, v_description, v_amount, v_date)
+        transaction = (
+            valid_type,
+            valid_category,
+            valid_desc,
+            valid_amount,
+            valid_date
+        )
 
         self.db.add_transaction(transaction)
-        self.update_balance(v_type, v_amount)
+        self.update_balance(valid_type, valid_amount)
         # id = self.db.get_field_value(id, field=id)
         print("\nTransaction added:")
         print(
-            f"Type: {v_type.title()} | Category: {v_category.title()} | Description: {v_description.title()} | Amount: ${v_amount:.2f} | Date: {v_date}")
+            f"Type: {valid_type.title()} | Category: {valid_category.title()} | Description: {valid_desc.title()} | Amount: ${valid_amount:.2f} | Date: {valid_date}")
 
-    def prompt_to_update(self):
+    def prompt_to_update(self) -> None:
         self.view_transaction_all()
 
         user_input = input(
@@ -176,7 +134,7 @@ class BudgetTracker:
         except ValueError as e:
             print(f"Error: {e}")
 
-    def prompt_to_delete(self):
+    def prompt_to_delete(self) -> None:
         self.view_transaction_all()
         user_input = input(
             "\nEnter the transaction ID you would like to delete, or type '0' to return to main menu: ")
@@ -201,7 +159,7 @@ class BudgetTracker:
         except ValueError as e:
             print(f"Error: {e}")
 
-    def edit_field(self, id, field):
+    def edit_field(self, id: int, field: str) -> None:
 
         print(f"\nEditing field: {field.title()}")
 
@@ -228,7 +186,7 @@ class BudgetTracker:
                 print(f"Error: {e}")
                 continue
 
-    def get_validator(self, field_name):
+    def get_validator(self, field_name: str):
         match field_name:
             case 'date':
                 return self.validate_date
@@ -241,7 +199,7 @@ class BudgetTracker:
             case 'description':
                 return self.validate_description
 
-    def validate_amount(self, field):
+    def validate_amount(self, field: float) -> float:
         try:
             amount = float(field)
             if (amount <= 0):
@@ -250,7 +208,7 @@ class BudgetTracker:
         except ValueError:
             raise ValueError("Amount must be a valid number.")
 
-    def validate_date(self, field: str):
+    def validate_date(self, field: str) -> str:
         try:
             valid_date = util.format_date(field)
             return valid_date
@@ -258,7 +216,7 @@ class BudgetTracker:
             raise ValueError(
                 "Date must be in MM/DD/YYYY format, and date must be valid")
 
-    def validate_category(self, field):
+    def validate_category(self, field: str) -> str:
         field = field.strip().lower()
         if not field.isalpha():
             raise ValueError("Category must be text only.")
@@ -270,14 +228,14 @@ class BudgetTracker:
                 "Category is too long. Must be shorter than 20 characters")
         return field
 
-    def validate_type(self, field):
+    def validate_type(self, field: str) -> str:
         type_choice = ['income', 'expense']
         field = field.lower().strip()
         if (field not in type_choice):
             raise ValueError("Type must be either 'income' or 'expense'")
         return field
 
-    def validate_description(self, field):
+    def validate_description(self, field: str) -> str:
         field = field.lower().strip()
         if len(field) < 3:
             raise ValueError(
@@ -287,7 +245,7 @@ class BudgetTracker:
                 "Description is too long. Must be shorter than 100 characters")
         return field
 
-    def get_transaction_id(self, transaction):
+    def get_transaction_id(self, transaction: list) -> int:
         return transaction['id']
 
     def display_menu(self):
