@@ -1,7 +1,9 @@
 from tracker import BudgetTracker
 from login import LoginAuthentication
 
-path = "C:\\Users\\alexs\\Documents\\Python Portfolio\\Budget Tracker\\tracker.db"
+
+path = "C:\\Users\\alexs\\Documents\\Python Portfolio\\Budget Tracker\\login.db"
+
 
 def main() -> None:
     # initializing the tracker file
@@ -29,7 +31,6 @@ def main() -> None:
     except ValueError as e:
         print("Invalid choice.")
 
-
     '''
     while logged_in:
         my_tracker.display_menu()
@@ -54,6 +55,7 @@ def main() -> None:
             case _:
                 print("Invalid option. Please pick from the options above.")
 '''
+
 
 if __name__ == "__main__":
     main()
