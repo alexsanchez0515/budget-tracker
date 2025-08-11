@@ -2,12 +2,12 @@ from utilities import Utilities as util
 from database import BudgetTrackerDB
 from login import LoginAuthentication
 
+path = "C:\\Users\\alexs\\Documents\\Python Portfolio\\Budget Tracker\\tracker.db"
 
 class BudgetTracker:
 
     def __init__(self, name: str) -> None:
-        self.db = BudgetTrackerDB(
-            "C:\\Users\\alexs\\Documents\\Python Portfolio\\Budget Tracker\\tracker.db")
+        self.db = BudgetTrackerDB(path=path)
         self.options: list = ["1. date", "2. description", "3. amount",
                         "4. category", "5. type", "0. return to main menu"]
         self.balance: float = 0
@@ -255,4 +255,4 @@ class BudgetTracker:
         print("3.) Delete Transaction")
         print("4.) View Transaction")
         print("5.) View Balance")
-        print("6.) Exit Tracker\n")
+        print("6.) Log out\n")
